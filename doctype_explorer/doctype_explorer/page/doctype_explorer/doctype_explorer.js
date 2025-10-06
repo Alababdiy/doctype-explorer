@@ -1,0 +1,86 @@
+frappe.pages['doctype_explorer'].on_page_load = function(wrapper) {
+    const page = frappe.ui.make_app_page({
+        parent: wrapper,
+        title: __('DocType Explorer'),
+        single_column: true
+    });
+
+    const $container = $(wrapper).find('.layout-main-section');
+    $container.empty();
+
+    const html = `
+    <div class="dt-explorer">
+      <div class="form-inline" style="gap: 8px; margin-bottom: 16px;">
+        <input type="text" class="form-control input-sm" id="dt-name" placeholder="Enter DocType name" style="min-width: 280px;" />
+        <button class="btn btn-primary btn-sm" id="btn-generate-json">${__('Generate JSON')}</button>
+        <button class="btn btn-default btn-sm" id="btn-copy-json">${__('Copy JSON')}</button>
+        <button class="btn btn-default btn-sm" id="btn-export-html">${__('Export HTML')}</button>
+      </div>
+      <pre id="json-output" style="white-space: pre-wrap; background:#f8f8f8; padding:12px; border-radius:4px; border:1px solid #ddd; max-height: 50vh; overflow:auto;"></pre>
+    </div>
+  `;
+
+    $container.append(html);
+
+    const $name = $container.find('#dt-name');
+    const $output = $container.find('#json-output');
+
+    function getName() {
+        return ($name.val() || '').trim();
+    }
+
+    function notifyError(msg) {
+        frappe.msgprint({
+            title: __('Error'),
+            indicator: 'red',
+            message: msg
+        });
+    }
+
+    $container.find('#btn-generate-json').on('click', function() {
+        const name = getName();
+        if (!name) { return notifyError(__('Please enter a DocType name.')); }
+        frappe.call({
+            method: 'doctype_explorer.explorer.generate_doctype_documentation',
+            args: { doctype_name: name, return_json: true },
+            freeze: true,
+            callback: (r) => {
+                if (r && r.message && r.message.success) {
+                    $output.text(JSON.stringify(r.message.data, null, 2));
+                } else {
+                    notifyError((r && r.message && r.message.message) || __('Failed to generate'));
+                }
+            }
+        });
+    });
+
+    $container.find('#btn-copy-json').on('click', function() {
+        const text = $output.text();
+        if (!text) { return notifyError(__('No JSON to copy.')); }
+        navigator.clipboard.writeText(text).then(() => {
+            frappe.show_alert({ message: __('Copied to clipboard'), indicator: 'green' });
+        }).catch(() => notifyError(__('Clipboard failed')));
+    });
+
+    $container.find('#btn-export-html').on('click', function() {
+        const name = getName();
+        if (!name) { return notifyError(__('Please enter a DocType name.')); }
+        frappe.call({
+            method: 'doctype_explorer.explorer.export_to_html',
+            args: { doctype_name: name },
+            freeze: true,
+            callback: (r) => {
+                // export_to_html returns a path string directly, so r.message is the path
+                const path = r && r.message;
+                if (path) {
+                    frappe.show_alert({ message: __('HTML exported: ') + path, indicator: 'green' });
+                    window.open('/files/doctype_docs/' + name.replace(/\s+/g, '_') + '.html', '_blank');
+                } else {
+                    notifyError(__('Failed to export HTML'));
+                }
+            }
+        });
+    });
+};
+
+

@@ -1,20 +1,12 @@
 [project]
-name = "doctype_explorer"
-authors = [
-    { name = "Ratina Ltd", email = "team@ratina.co"}
-]
-description = "Doctype Explorer"
-requires-python = ">=3.10"
+name = "doctype-explorer"
+version = "0.1.0"
 readme = "README.md"
-dynamic = ["version"]
-dependencies = [
-    # "frappe~=15.0.0" # Installed and managed by bench.
-]
+description = "Frappe DocType explorer: generate JSON/HTML docs, compare and discover"
+authors = [{ name = "abdo" }]
+requires-python = ">=3.10"
+dependencies = []
 
 [build-system]
-requires = ["flit_core >=3.4,<4"]
-build-backend = "flit_core.buildapi"
-
-# These dependencies are only installed when developer mode is enabled
-[tool.bench.dev-dependencies]
-# package_name = "~=1.1.0"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
