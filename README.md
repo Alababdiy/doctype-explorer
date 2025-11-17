@@ -36,7 +36,7 @@ A comprehensive Frappe app for exploring, documenting, and analyzing Frappe DocT
 ### Install the App
 
 ```bash
-# Get the app
+# Get the app from GitHub
 bench get-app https://github.com/Alababdiy/doctype-explorer.git
 
 # Install on your site
