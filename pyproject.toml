@@ -1,5 +1,5 @@
 [project]
-name = "doctype-explorer"
+name = "doctype_explorer"
 version = "0.1.0"
 readme = "README.md"
 description = "Frappe DocType explorer: generate JSON/HTML docs, compare and discover"

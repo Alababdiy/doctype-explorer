@@ -10,7 +10,7 @@ def get_data():
             "color": "blue",
             "icon": "octicon octicon-search",
             "type": "link",
-            "link": "#doctype-explorer",
+            "link": "#doctype_explorer",
         }
     ]
 
